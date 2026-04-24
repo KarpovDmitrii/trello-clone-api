@@ -2,6 +2,7 @@ import { Global, Module, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect, sql } from 'kysely';
+import { Tables } from './models/database.types';
 
 @Global()
 @Module({
@@ -22,7 +23,7 @@ import { Kysely, PostgresDialect, sql } from 'kysely';
           }),
         });
 
-        const db = new Kysely<any>({ dialect });
+        const db = new Kysely<Tables>({ dialect });
 
         try {
           await sql`SELECT 1`.execute(db);
