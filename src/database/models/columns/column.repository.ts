@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Kysely } from 'kysely';
-import { Tables } from "../../models/database.types"
+import { Tables } from "../database-models.types"
 import { Column, ColumnCreate, ColumnUpdate } from './column.model';
 
 @Injectable()
