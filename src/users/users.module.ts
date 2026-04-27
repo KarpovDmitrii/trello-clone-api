@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { UsersModelModule } from '../database/models/users/users.model.module';
+import { JwtAuthModule } from '../jwt/jwt-auth.module';
 
 @Module({
   imports: [
     UsersModelModule,
+    JwtAuthModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
