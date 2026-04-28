@@ -2,20 +2,30 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Kysely } from 'kysely';
 import { Tables } from "../database-models.types"
 import { Column, ColumnCreate, ColumnUpdate } from './column.model';
+import { CursorPaginationParamsDto } from '../../../common/pagination/dto/cursor-pagination-params.dto';
+import { Transaction } from 'kysely';
+import { PaginationService } from '../../../common/pagination/pagination.service';
 
 @Injectable()
 export class ColumnsRepository {
   constructor(
     @Inject('DB') private readonly db: Kysely<Tables>,
+    private readonly paginationService: PaginationService,
   ) {}
 
-  async findByUserId(userId: string): Promise<Column[]> {
-    return await this.db
+  async getPaginatedColumns(
+    userId: string,
+    params: CursorPaginationParamsDto,
+    transaction?: Transaction<Tables>,
+  ) {
+    const queryBuilder = (transaction ?? this.db)
       .selectFrom('columns')
       .selectAll()
       .where('user_id', '=', userId)
       .where('deleted_at', 'is', null)
-      .execute();
+      .orderBy('id', 'asc');
+
+    return this.paginationService.paginate(queryBuilder, params, 'id');
   }
 
   async findById(id: string): Promise<Column | undefined> {

@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards, ParseUUIDPipe, ForbiddenException } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards, ParseUUIDPipe, ForbiddenException, Query } from '@nestjs/common';
 import { ColumnsService } from './columns.service';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { CustomJwtGuard } from '../jwt/guards/custom-jwt.guard';
 import { ColumnOwnerGuard } from '../jwt/guards/column-owner.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { CursorPaginationParamsDto } from '../common/pagination/dto/cursor-pagination-params.dto';
 
 @ApiTags('Columns')
 @ApiBearerAuth()
@@ -26,9 +27,12 @@ export class ColumnsController {
 
   @Get()
   @ApiOperation({ summary: 'Получить все колонки пользователя' })
-  findAll(@Param('userId', new ParseUUIDPipe()) userId: string) {
-    return this.columnsService.findAll(userId);
-  }
+  findAll(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Query() paginationDto: CursorPaginationParamsDto,
+    ) {
+    return this.columnsService.findAll(userId, paginationDto);
+    }
 
   @Patch(':id')
   @UseGuards(ColumnOwnerGuard)
