@@ -10,11 +10,11 @@ import { CursorPaginationParamsDto } from '../common/pagination/dto/cursor-pagin
 @ApiTags('Columns')
 @ApiBearerAuth()
 @UseGuards(CustomJwtGuard)
-@Controller('users/:userId/columns')
+@Controller()
 export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
-  @Post()
+  @Post('users/:userId/columns')
   @ApiOperation({ summary: 'Создать колонку' })
   create(
     @Param('userId', new ParseUUIDPipe()) userId: string,
@@ -25,7 +25,7 @@ export class ColumnsController {
     return this.columnsService.create(userId, dto);
   }
 
-  @Get()
+  @Get('users/:userId/columns')
   @ApiOperation({ summary: 'Получить все колонки пользователя' })
   findAll(
     @Param('userId', new ParseUUIDPipe()) userId: string,
@@ -34,7 +34,7 @@ export class ColumnsController {
     return this.columnsService.findAll(userId, paginationDto);
     }
 
-  @Patch(':id')
+  @Patch('columns/:id')
   @UseGuards(ColumnOwnerGuard)
   @ApiOperation({ summary: 'Обновить колонку' })
   update(
@@ -44,7 +44,7 @@ export class ColumnsController {
     return this.columnsService.update(id, dto);
   }
 
-  @Delete(':id')
+  @Delete('columns/:id')
   @UseGuards(ColumnOwnerGuard)
   @ApiOperation({ summary: 'Удалить колонку' })
   remove(@Param('id', new ParseUUIDPipe()) id: string) {
