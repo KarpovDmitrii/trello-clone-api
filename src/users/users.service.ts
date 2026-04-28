@@ -50,7 +50,8 @@ export class UsersService {
   async findOne(id: string) {
     const user = await this.usersRepo.findById(id);
     if (!user) throw new NotFoundException('Пользователь не найден');
-    return user;
+    const { password_hash, ...result } = user;
+    return result;
   }
 
   async update(id: string, dto: UpdateUserDto) {
@@ -62,6 +63,9 @@ export class UsersService {
       delete updateData.password;
     }
 
-    return this.usersRepo.update(id, updateData);
+  const updatedUser = await this.usersRepo.update(id, updateData);
+
+  const { password_hash, ...result } = updatedUser;
+  return result;
   }
 }
