@@ -7,6 +7,7 @@ import { ModelsModule } from './database/models/database-models.module';
 import { UsersModule } from './users/users.module';
 import { ColumnsModule } from './columns/columns.module';
 import { CardsModule } from './cards/cards.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { CardsModule } from './cards/cards.module';
     ModelsModule,
     UsersModule,
     ColumnsModule,
-    CardsModule
+    CardsModule,
+    CommentsModule
   ],
   controllers: [AppController],
   providers: [AppService],

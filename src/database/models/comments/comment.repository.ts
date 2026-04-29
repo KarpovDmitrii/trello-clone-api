@@ -2,30 +2,45 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Kysely } from 'kysely';
 import { Tables } from "../database-models.types"
 import { Comment, CommentCreate, CommentUpdate } from './comment.model';
+import { CursorPaginationParamsDto } from '../../../common/pagination/dto/cursor-pagination-params.dto';
+import { PaginationService } from '../../../common/pagination/pagination.service';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
     @Inject('DB') private readonly db: Kysely<Tables>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   async findById(id: string): Promise<Comment | undefined> {
     return await this.db
       .selectFrom('comments')
-      .selectAll()
-      .where('id', '=', id)
-      .where('deleted_at', 'is', null)
+      .innerJoin('cards', 'cards.id', 'comments.card_id')
+      .innerJoin('columns', 'columns.id', 'cards.column_id')
+      .selectAll('comments')
+      .where('comments.id', '=', id)
+      .where('comments.deleted_at', 'is', null)
+      .where('cards.deleted_at', 'is', null)
+      .where('columns.deleted_at', 'is', null)
       .executeTakeFirst();
   }
 
-  // Получить все комментарии к конкретной карточке
-  async findByCardId(cardId: string): Promise<Comment[]> {
-    return await this.db
+  async getPaginatedComments(
+    cardId: string,
+    params: CursorPaginationParamsDto,
+  ) {
+    const queryBuilder = this.db
       .selectFrom('comments')
-      .selectAll()
-      .where('card_id', '=', cardId)
-      .where('deleted_at', 'is', null)
-      .execute();
+      .innerJoin('cards', 'cards.id', 'comments.card_id')
+      .innerJoin('columns', 'columns.id', 'cards.column_id')
+      .selectAll('comments')
+      .where('comments.card_id', '=', cardId)
+      .where('comments.deleted_at', 'is', null)
+      .where('cards.deleted_at', 'is', null)
+      .where('columns.deleted_at', 'is', null)
+      .orderBy('comments.id', 'asc');
+
+    return this.paginationService.paginate(queryBuilder, params, 'id');
   }
 
   async create(data: CommentCreate): Promise<Comment> {
