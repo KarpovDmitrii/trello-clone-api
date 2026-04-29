@@ -14,7 +14,6 @@ export class CustomJwtGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const authHeader = request.headers.authorization as string;
-    console.log('Auth Header:', authHeader);
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Access denied');

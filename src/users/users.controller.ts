@@ -23,20 +23,20 @@ export class UsersController {
     return this.usersService.login(dto);
   }
 
-  @Get('me')
-  @ApiBearerAuth()
-  @UseGuards(CustomJwtGuard)
-  @ApiOperation({ summary: 'Получить профиль' })
-  findOne(@CurrentUser() user: any) {
-    return this.usersService.findOne(user.userId);
-  }
-
   @Patch('me')
   @ApiBearerAuth()
   @UseGuards(CustomJwtGuard)
   @ApiOperation({ summary: 'Обновить профиль' })
   update(@CurrentUser() user: any, @Body() dto: UpdateUserDto) {
     return this.usersService.update(user.userId, dto);
+  }
+
+  @Get(':id')
+  @ApiBearerAuth()
+  @UseGuards(CustomJwtGuard)
+  @ApiOperation({ summary: 'Получить профиль' })
+  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.usersService.findOne(id);
   }
 }
 
